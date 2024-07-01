@@ -5,23 +5,20 @@ import akka.cluster.{Member, UniqueAddress}
 import com.ajjpj.simpleakkadowning.SurvivalDecider.ClusterState
 import com.typesafe.config.Config
 
-import scala.collection.Set
 import scala.collection.immutable.SortedSet
-
 
 trait SurvivalDecider {
   def isInMinority(clusterState: ClusterState, selfAddress: Address): Boolean
 }
 
 object SurvivalDecider {
-  private val memberOrdering = new Ordering[ClusterMemberInfo] {
-    override def compare (x: ClusterMemberInfo, y: ClusterMemberInfo) =
-      Member.addressOrdering.compare(x.uniqueAddress.address, y.uniqueAddress.address)
-  }
-
+  
   case class ClusterMemberInfo(uniqueAddress: UniqueAddress, roles: Set[String], member: Member)
+  object ClusterMemberInfo {
+    implicit val ordering: Ordering[ClusterMemberInfo] = Ordering.by(_.uniqueAddress.address)
+  }
   case class ClusterState(upMembers: Set[ClusterMemberInfo], unreachable: Set[UniqueAddress]) {
-    lazy val sortedUpMembers = SortedSet.empty(memberOrdering) ++  upMembers
+    lazy val sortedUpMembers = SortedSet.empty[ClusterMemberInfo] ++ upMembers
     lazy val sortedUpAndReachable = sortedUpMembers.filterNot (x => unreachable.contains(x.uniqueAddress))
     lazy val upReachable = upMembers.filterNot(x => unreachable(x.uniqueAddress))
     lazy val upUnreachable = upMembers.filter(x => unreachable(x.uniqueAddress))

@@ -20,7 +20,7 @@ class SimpleAkkaDowningProvider(system: ActorSystem) extends DowningProvider {
     val key = "down-removal-margin"
     toRootLowerCase(cc.getString(key)) match {
       case "off" => Duration.Zero
-      case _     => cc.getMillisDuration(key) requiring (_ >= Duration.Zero, key + " > 0s, or off")
+      case _     => cc.getMillisDuration(key).requiring (_ >= Duration.Zero, key + " > 0s, or off")
     }
   }
 
@@ -28,7 +28,7 @@ class SimpleAkkaDowningProvider(system: ActorSystem) extends DowningProvider {
       import Helpers._
       val cc = system.settings.config.getConfig("simple-akka-downing")
       val key = "stable-after"
-      val stableInterval = cc.getMillisDuration(key) requiring (_ > Duration.Zero, key + " > 0s")
+      val stableInterval = cc.getMillisDuration(key).requiring (_ > Duration.Zero, key + " > 0s")
 
       val decider = SurvivalDecider(system.settings.config)
 

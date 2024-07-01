@@ -10,9 +10,9 @@ scalacOptions ++= Seq(
   "-language:higherKinds"
 )
 
-crossScalaVersions := Seq("2.11.8", "2.12.4")
-scalaVersion := "2.12.4"
-organization := "com.ajjpj.simple-akka-downing"
+crossScalaVersions := Seq("2.12.19", "2.13.14")
+scalaVersion := "2.13.14"
+organization := "com.codacy"
 
 version      := "0.9.3"
 
@@ -31,10 +31,3 @@ lazy val `simple-akka-downing` = (project in file("."))
     libraryDependencies += testKit % Test,
     libraryDependencies += multiNodeTestKit % Test,
   )
-
-publishTo := Some(
-  if (isSnapshot.value)
-    Opts.resolver.sonatypeSnapshots
-  else
-    Opts.resolver.sonatypeStaging
-)
